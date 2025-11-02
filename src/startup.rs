@@ -51,6 +51,10 @@ impl Application {
             listener,
         })
     }
+
+    pub async fn run_until_stopped(self) -> Result<(), std::io::Error> {
+        axum::serve(self.listener, self.router).await
+    }
 }
 
 #[derive(Clone)]

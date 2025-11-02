@@ -1,0 +1,81 @@
+version: "3.8"
+
+services:
+    # PostgreSQL Database
+    postgres:
+        image: postgres:16-alpine
+        container_name: newsletter_postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: newsletter
+            POSTGRES_PASSWORD: newsletter_password
+            POSTGRES_DB: newsletter
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U newsletter"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - newsletter_network
+
+    # Redis Cache
+    redis:
+        image: redis:7-alpine
+        container_name: newsletter_redis
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - newsletter_network
+
+    # Rust Application
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: newsletter_app
+        restart: unless-stopped
+        ports:
+            - "8000:8000"
+        environment:
+            # Use local environment (works for Docker too)
+            APP_ENVIRONMENT: local
+
+            # Override database and Redis to use Docker service names
+            # Format: APP_<section>__<field> (double underscore between section and field)
+            APP_DATABASE__HOST: postgres
+            APP_DATABASE__USERNAME: newsletter
+            APP_DATABASE__PASSWORD: newsletter_password
+            APP_DATABASE__DATABASE_NAME: newsletter
+            APP_REDIS_URI: redis://redis:6379
+
+            # Override secrets
+            APP_APPLICATION__HMAC_SECRET: super-secret-key-change-in-production
+            APP_EMAIL_CLIENT__SENDER_EMAIL: noreply@example.com
+            APP_EMAIL_CLIENT__AUTHORIZATION_TOKEN: your-postmark-token-here
+        depends_on:
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - newsletter_network
+
+networks:
+    newsletter_network:
+        driver: bridge
+
+volumes:
+    postgres_data:
+    redis_data:

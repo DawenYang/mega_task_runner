@@ -1,23 +1,42 @@
-use axum::http::StatusCode;
-use axum::routing::get;
-use axum::Router;
-use std::net::SocketAddr;
-use tokio::net::TcpListener;
+use newsletter_subscriber::{configuration::get_configuration, startup::Application};
+use std::fmt::{Debug, Display};
+use tokio::task::JoinError;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
-    let app = Router::new().route("/health_check", get(health_check_handler));
+    let configuration = get_configuration().expect("Failed to read configuration");
+    let application = Application::build(configuration.clone()).await?;
+    let application_task = tokio::spawn(application.run_until_stopped());
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8001));
-    tracing::debug!("Listening on {}", addr);
+    tokio::select! {
+        o = application_task => report_exit("API", o)
+    }
 
-    let listener = TcpListener::bind(&addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    Ok(())
 }
 
-async fn health_check_handler() -> StatusCode {
-    tracing::info!("Health check request");
-    StatusCode::OK
+fn report_exit(task_name: &str, outcome: Result<Result<(), impl Debug + Display>, JoinError>) {
+    match outcome {
+        Ok(Ok(())) => {
+            tracing::info!("{} has exited", task_name)
+        }
+        Ok(Err(e)) => {
+            tracing::error!(
+                error.cause_chain = ?e,
+                error.message = %e,
+                "{} failed",
+                task_name
+            )
+        }
+        Err(e) => {
+            tracing::error!(
+                error.cause_chain = ?e,
+                error.message = %e,
+                "{}' task failed to complete",
+                task_name
+            )
+        }
+    }
 }

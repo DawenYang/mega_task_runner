@@ -1,0 +1,45 @@
+# Build artifacts
+target/
+**/target/
+
+# Dependencies
+**/node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+*.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Environment files
+.env
+.env.*
+
+# Test files
+tests/
+**/*_test.rs
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
