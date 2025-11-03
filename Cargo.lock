@@ -1172,6 +1172,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "mega_task_runner"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "claims",
+ "config",
+ "fake",
+ "quickcheck",
+ "quickcheck_macros",
+ "redis",
+ "reqwest",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tower",
+ "tower-http 0.5.2",
+ "tracing",
+ "tracing-subscriber",
+ "unicode-segmentation",
+ "validator",
+ "wiremock",
+]
+
+[[package]]
 name = "memchr"
 version = "2.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1228,33 +1255,6 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "tempfile",
-]
-
-[[package]]
-name = "newsletter_subscriber"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "claims",
- "config",
- "fake",
- "quickcheck",
- "quickcheck_macros",
- "redis",
- "reqwest",
- "secrecy",
- "serde",
- "serde_json",
- "sqlx",
- "tokio",
- "tower",
- "tower-http 0.5.2",
- "tracing",
- "tracing-subscriber",
- "unicode-segmentation",
- "validator",
- "wiremock",
 ]
 
 [[package]]

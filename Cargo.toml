@@ -1,5 +1,5 @@
 [package]
-name = "newsletter_subscriber"
+name = "mega_task_runner"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,7 +7,7 @@ edition = "2021"
 path = "src/lib.rs"
 
 [[bin]]
-name = "newsletter_subscriber"
+name = "mega_task_runner"
 path = "src/main.rs"
 
 [dependencies]

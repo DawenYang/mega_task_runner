@@ -1,4 +1,4 @@
-use newsletter_subscriber::{configuration::get_configuration, startup::Application};
+use mega_task_runner::{configuration::get_configuration, startup::Application};
 use std::fmt::{Debug, Display};
 use tokio::task::JoinError;
 
